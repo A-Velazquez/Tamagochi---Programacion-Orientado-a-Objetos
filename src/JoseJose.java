@@ -1,43 +1,50 @@
-import javax.swing.*;
-import java.awt.BorderLayout;  
-import java.awt.Font;  
+import java.awt.BorderLayout;
+import java.awt.Font;
+import javax.swing.*;  
 
-public class JoseJose extends JFrame implements TamagochiBase{
-    // Atributos que compartiran todas las mascotas
-        private double hambre;
-        private double sueno;
-        private double felicidad;
-        private String nombre;
+// CAMBIO CRÍTICO: Debe heredar de JPanel, no de JFrame
+public class JoseJose extends JPanel implements TamagochiBase {
+    
+    private double hambre;
+    private double sueno;
+    private double felicidad;
+    private String nombre;
 
-    // Constructor de la mascota
-        public JoseJose(VentanaPrincipal app){
-            this.hambre = 100.0;
-            this.sueno = 0.0;
-            this.felicidad = 100.0;
-            this.nombre = "Jose Jose";
+    public JoseJose(VentanaPrincipal app) {
+        this.hambre = 100.0;
+        this.sueno = 0.0;
+        this.felicidad = 100.0;
+        this.nombre = "Jose Jose";
 
-            setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
 
-            JLabel titulo = new JLabel("Pantalla de Inicio", SwingConstants.CENTER);
-            titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        JLabel titulo = new JLabel("Jugando con: " + this.nombre, SwingConstants.CENTER);
+        titulo.setFont(new Font("Arial", Font.BOLD, 24));
 
-            // Boton para volver al inicio
-            JButton btnIrDashboard = new JButton("Volver al incio");
+        JButton btnIrDashboard = new JButton("Volver al menú");
 
-            // Al hacer clic, cambia de panel SIN abrir nueva ventana
-            btnIrDashboard.addActionListener(e -> app.mostrarPanel("inicio"));
+        // CAMBIO: Asegúrate de que el String coincida con el que pusimos en VentanaPrincipal ("Menu")
+        btnIrDashboard.addActionListener(e -> app.mostrarPanel("Menu"));
 
-            add(titulo, BorderLayout.CENTER);
-            add(btnIrDashboard, BorderLayout.SOUTH);
-        }
+        add(titulo, BorderLayout.CENTER);
+        add(btnIrDashboard, BorderLayout.SOUTH);
+    }
 
-        // Metodos con override
+    @Override
+    public void quejarseHambriento() {}
+    
+    @Override
+    public void cansadoSueno() {}
+    
+    @Override
+    public void llorar() {}
 
-            // Metodos para inidicar que falta algo
-            @Override
-            public void quejarseHambriento(){
-                
-            }
-            
+    @Override
+    public void accionComer() {}
 
+    @Override
+    public void accionDormir() {}
+
+    @Override
+    public void accionFelicidad() {}
 }

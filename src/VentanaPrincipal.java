@@ -1,87 +1,52 @@
 import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Image;
-
 import javax.swing.*;
 
-import java.awt.event.ActionListener; 
-import java.awt.event.ActionEvent;
-
-public class VentanaPrincipal extends JFrame{
+public class VentanaPrincipal extends JFrame {
  
-    // Atributos
-    public JPanel panel;
-    // JButton los pongo de atributos porque tambien los va a usar actionlistener
-    public JButton botonComer;
-    public JButton botonDormir;
-    public JButton botonFelicidad;
-    // Card Layout va a proporcionar la habilidad de cambiar entre diferentes paneles
     private CardLayout cardLayout;
-    // Un panel va a ser el que contenga todos los paneles, pero que solo este activa una 
     private JPanel contenedor;
 
-    // Inicializar la ventana y llamar al metodo principal
-    public VentanaPrincipal(){
-
-        this.setSize(600,400); // Cambia el tamano de la ventana
+    public VentanaPrincipal() {
+        this.setSize(600, 400); 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setTitle("App␣de␣Adrian"); // Cambia el titulo
+        this.setTitle("App de Adrian - Tamagochi"); 
         this.setLocationRelativeTo(null);
-        componentes();
-
+        
+        iniciarComponentes();
     }
 
-    // Organiza la construccion de la interfaz llamando a otros metodos.
-    private void componentes(){
-        // Es mejor separarlo para la identificacion de errores y la legibilidad del codigo
-        paneles();
-        etiquetas();
-        // botones();
-        // opciones();
-        cardLayoutFuncion();
-       
-    }
-
-    // Crea el contenedor principal de la interfaz
-    private void paneles(){
-        panel = new JPanel();
-        panel.setBackground(Color.WHITE); // Cambia el color del panel
-        this.getContentPane().add(panel);
-        panel.setLayout(null); // Establece el gestor de diseno para organizar los componentes dentro del panel.
-    }
-
-    // Agrega textos a la interfaz
-    private void etiquetas(){
-        JLabel e1 = new JLabel();
-        JLabel e2 = new JLabel();
-        e1.setText("Tamagochi");
-        e1.setForeground(Color.GREEN); // Le da el color de fondo
-        e1.setBounds(10,10, 50,50); // Dar el limite
-        panel.add(e1);
-
-        e2.setText("Adrian"); // Agrega una etiqueta con tu nombre
-        e2.setBounds(50, 40, 50, 50); // Pone el limite
-        e2.setForeground(Color.RED); // Cambiar el color del texto
-        panel.add(e2);
-    }
-
-    // Metodo para crear el contenedor necesario para la libreria CardLayout
-    private void cardLayoutFuncion(){
+    private void iniciarComponentes() {
+        // Inicializamos el CardLayout y el contenedor principal
         cardLayout = new CardLayout();
         contenedor = new JPanel(cardLayout);
 
-        // Los diferentes paneles que se identifican con un nombre clave
-        contenedor.add("Menu", new Menu(this));
-        contenedor.add("JoseJose", new JoseJose(this));
+        // Agregamos todas las pantallas al "mazo de cartas"
+        // El primer panel que agregues será el que se muestre al iniciar la app.
+        contenedor.add(new Menu(this), "Menu");
+        contenedor.add(new JoseJose(this), "JoseJose");
+        
+        // Agregamos paneles de prueba para las nuevas opciones
+        contenedor.add(crearPanelPlaceholder("Crear nueva mascota", this), "CrearMascota");
+        contenedor.add(crearPanelPlaceholder("Mascotas guardadas", this), "Guardadas");
+        contenedor.add(crearPanelPlaceholder("Ajustes", this), "Ajustes");
 
-        add(contenedor);
-        setVisible(true);
+        // Añadimos el contenedor a la ventana
+        this.getContentPane().add(contenedor);
     }
 
-    // Metodo para cambiar de pantalla
+    // Método público para cambiar de pantalla desde cualquier otro panel
     public void mostrarPanel(String nombre) {
         cardLayout.show(contenedor, nombre);
     }
 
+    // Método auxiliar SOLO para que puedas probar la navegación sin tener 
+    // que crear todos los archivos de golpe. Luego crearás las clases reales.
+    private JPanel crearPanelPlaceholder(String tituloTexto, VentanaPrincipal app) {
+        JPanel panel = new JPanel();
+        panel.add(new JLabel(tituloTexto));
+        JButton btnVolver = new JButton("Volver al Menú");
+        btnVolver.addActionListener(e -> app.mostrarPanel("Menu"));
+        panel.add(btnVolver);
+        return panel;
+    }
 }
