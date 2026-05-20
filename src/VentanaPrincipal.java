@@ -1,4 +1,8 @@
 import java.awt.CardLayout;
+import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import javax.swing.*;
 
 public class VentanaPrincipal extends JFrame {
@@ -7,13 +11,15 @@ public class VentanaPrincipal extends JFrame {
     private JPanel contenedor;
 
     public VentanaPrincipal() {
-        // CAMBIO: Resolución a 720p (1280 x 720)
         this.setSize(1280, 720); 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setTitle("App de Adrian - Tamagochi"); 
-        this.setLocationRelativeTo(null); // Centra la ventana en la pantalla
+        this.setLocationRelativeTo(null);
         
         iniciarComponentes();
+        
+        // Llamamos al método para cambiar el cursor al final
+        configurarCursor();
     }
 
     private void iniciarComponentes() {
@@ -41,5 +47,29 @@ public class VentanaPrincipal extends JFrame {
         btnVolver.addActionListener(e -> app.mostrarPanel("Menu"));
         panel.add(btnVolver);
         return panel;
+    }
+
+    /**
+     * Método para cargar y establecer un cursor personalizado
+     */
+    private void configurarCursor() {
+        // Asegúrate de tener tu imagen 'cursor.png' en la carpeta img
+        java.net.URL imgURL = getClass().getResource("/img/cursor.png");
+        
+        if (imgURL != null) {
+            ImageIcon iconoCursor = new ImageIcon(imgURL);
+            Image imagenCursor = iconoCursor.getImage();
+            
+            // El hotspot es el píxel que hace el clic. (0, 0) es la punta superior izquierda.
+            Point hotspot = new Point(0, 0);
+            
+            // Creamos el cursor a través del Toolkit de Java
+            Cursor cursorPersonalizado = Toolkit.getDefaultToolkit().createCustomCursor(imagenCursor, hotspot, "Cursor Propio");
+            
+            // Se lo aplicamos a la ventana (JFrame)
+            this.setCursor(cursorPersonalizado);
+        } else {
+            System.err.println("No se encontró la imagen del cursor en /img/cursor.png");
+        }
     }
 }
