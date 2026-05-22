@@ -1,179 +1,87 @@
 import java.awt.*;
-import javax.swing.*;   
+import javax.swing.*;
 
-
-// Debe heredar de JPanel y ser interfaz de Tamagochi base
 public class JoseJose extends JPanel implements TamagochiBase {
+    // Variables de estadísticas (0 a 100)
+    private double vida; 
+    private double hambre, sueno, alcoholismo, suciedad, ganasDeCagar;
+    private String nombre;
+    private Timer timerVida;
+    
+    // Variables para la animación
+    private JLabel spritePersonaje;
+    private Timer timerAnimacion;
+    private String estadoAnimacion = "idle"; 
+    private int frameAnimacion = 1;
 
-    // Atributos del personaje
-        private double hambre;
-        private double sueno;
-        private double alcoholismo;
-        private double suciedad;
-        private double ganasDeCagar;
-        private String nombre;
-    // Atributos de etiqueta
-        public JLabel etiquetaHambre;
-        public JLabel etiquetaSueno;
-        public JLabel etiquetaLlorar;
-        public JLabel etiquetaSucio;
-        public JLabel etiquetaCagar;
-        public JLabel etiquetaError;
-    // Atributos de boton
-        public JButton botonComer;
-        public JButton botonDormir;
-        public JButton botonTomar;
-        public JButton botonBanarse;
-        public JButton botonCagar;
-    // Atributo para el timer
-        private Timer timerVida;
+    // Componentes UI
+    public JButton botonComer, botonDormir, botonTomar, botonBanarse, botonCagar;
+    public JLabel etiquetaEstado;
+    private JProgressBar barraVida; 
 
     public JoseJose(VentanaPrincipal app) {
+        setLayout(null); 
+        this.nombre = "Jose Jose";
+        
+        // Inicializar stats
+        this.vida = 100.0;
         this.hambre = 0.0;
         this.sueno = 0.0;
         this.alcoholismo = 100.0;
         this.suciedad = 0.0;
         this.ganasDeCagar = 0.0;
-        this.nombre = "Jose Jose";
 
-        setLayout(new BorderLayout());
+        // Barra de Vida
+        barraVida = new JProgressBar(0, 100);
+        barraVida.setValue((int) vida);
+        barraVida.setStringPainted(true); 
+        barraVida.setForeground(new Color(46, 204, 113)); 
+        barraVida.setBackground(Color.DARK_GRAY);
+        barraVida.setBounds(440, 20, 400, 25); 
+        add(barraVida);
 
-        JLabel titulo = new JLabel("Jugando con: " + this.nombre, SwingConstants.CENTER);
-        titulo.setFont(new Font("Arial", Font.BOLD, 24));
+        // Espacio para el Sprite del personaje
+        spritePersonaje = new JLabel();
+        spritePersonaje.setBounds(440, 110, 400, 350); 
+        spritePersonaje.setHorizontalAlignment(SwingConstants.CENTER);
+        add(spritePersonaje);
 
-        JButton btnIrDashboard = new JButton("Volver al menú");
+        // Botones e interfaz de texto
+        botonComer = new JButton("Comer");
+        botonDormir = new JButton("Dormir");
+        botonTomar = new JButton("Tomar");
+        botonBanarse = new JButton("Bañarse");
+        botonCagar = new JButton("Cagar");
+        
+        etiquetaEstado = new JLabel("Jose Jose está bien", SwingConstants.CENTER);
+        etiquetaEstado.setBounds(440, 65, 400, 30);
+        etiquetaEstado.setFont(new Font("Arial", Font.BOLD, 18));
+        add(etiquetaEstado);
 
-        // Boton para volver al menu de inicio
-        btnIrDashboard.addActionListener(e -> app.mostrarPanel("Menu"));
+        botonesMetodo(); 
 
-        botonesMetodo();
+        botonComer.addActionListener(e -> accionComer());
+        botonDormir.addActionListener(e -> accionDormir());
+        botonTomar.addActionListener(e -> accionFelicidad());
+        botonBanarse.addActionListener(e -> accionBanarse());
+        botonCagar.addActionListener(e -> accionCagar());
 
-        add(titulo, BorderLayout.CENTER);
-        add(btnIrDashboard, BorderLayout.SOUTH);
+        JButton btnVolver = new JButton("Guardar y Salir");
+        btnVolver.setBounds(540, 600, 200, 40);
+        btnVolver.addActionListener(e -> app.mostrarPanel("Menu"));
+        add(btnVolver);
 
-        // Crear los botones  e indicar su accion con sus exceptions
-
-            // Accion comer
-            botonComer = new JButton();
-                // Si le intenta dar de comer cuando no tiene hambre, da error
-                if (hambre == 0.0){
-                    try{
-                        botonComer.addActionListener(e -> accionComer());
-                    } catch (Exception e) {
-                        etiquetaErrorMetodo();
-                        etiquetaHambre.setText("Error: Jose no tiene hambre");
-                        etiquetaHambre.setVisible(true);
-                    }
-                } else {
-                    botonComer.addActionListener(e -> accionComer());
-                }
-
-            // Si intenta dormir cuando no tiene nada de sueno, da error
-                if (sueno == 0.0){
-                    try{
-                        botonDormir.addActionListener(e -> accionComer());
-                    } catch (Exception e) {
-                        etiquetaErrorMetodo();
-                        etiquetaError.setText("Error: Jose no quiere dormir");
-                        etiquetaError.setVisible(true);
-                    }
-                } else {
-                    botonDormir.addActionListener(e -> accionComer());
-                }
-
-            // Si intenta tomar cuando el alcoholismo esta al maximo, da error
-                if (alcoholismo == 100.0){
-                    try{
-                        botonTomar.addActionListener(e -> accionFelicidad());
-                    } catch (Exception e) {
-                        etiquetaErrorMetodo();
-                        etiquetaError.setText("Error: Jose no quiere dormir");
-                        etiquetaError.setVisible(true);
-                    }
-                } else {
-                    botonTomar.addActionListener(e -> accionFelicidad());
-                }
-
-            // Si intenta banarse cuando no esta nada sucio
-                if (suciedad == 0.0){
-                    try {
-                        botonBanarse.addActionListener(e -> accionBanarse());
-                    } catch (Exception e) {
-                        etiquetaErrorMetodo();
-                        etiquetaError.setText("Error: Se va a morir we");
-                        etiquetaError.setVisible(true);
-                    }
-                } else {
-                    botonBanarse.addActionListener(e -> accionBanarse());
-                }
-
-            // Si intenta cagar cuando no lele pancha, da error
-                if (ganasDeCagar == 0.0){
-                    try {
-                        botonCagar.addActionListener(e -> accionCagar());
-                    } catch (Exception e) {
-                        etiquetaErrorMetodo();
-                        etiquetaError.setText("Error: No lele pancha");
-                        etiquetaError.setVisible(true);
-                    }
-                } else {
-                    botonCagar.addActionListener(e -> accionCagar());
-                }
-
-        // Llamar la funcion del timer
-        iniciarTimer();        
-
+        iniciarTimerVida();
+        iniciarTimerAnimacion(); 
     }
 
-    // Metodo de para el timer, para que los atributos vayan bajando con el tiempo
-    public void iniciarTimer() {
-        // Se ejecuta cada 3000ms = 3 segundos
-        timerVida = new Timer(3000, e -> {
-            // Hambre sube con el tiempo
-            setHambre(Math.min(getHambre() + 5.0, 100.0));
-
-            // Sueño sube con el tiempo
-            setSueno(Math.min(getSueno() + 3.0, 100.0));
-
-            // Alcoholismo baja con el tiempo
-            setAlcoholismo(Math.max(getAlcoholismo() - 4.0, 0.0));
-
-            // Suciedad sube con el tiempo
-            setSuciedad(Math.min(getSuciedad() + 2.0, 100.0));
-
-            // Ganas de cagar suben con el tiempo
-            setGanasDeCagar(Math.min(getGanasDeCagar() + 3.0, 100.0));
-
-            // Llamar los metodos de queja para que reaccionen al cambio
-            quejarseHambriento();
-            cansadoSueno();
-            llorar();
-            quejarseSuciedad();
-            quejarseCagar();
-
-            // Actualizar la pantalla
-            revalidate();
-            repaint();
-        });
-    timerVida.start();
-    }
-
-    // Metodo para los parametros de etiqueta error
-    public void etiquetaErrorMetodo(){
-        etiquetaError = new JLabel();
-        etiquetaError.setForeground(Color.GREEN); // Le da el color de fondo
-        etiquetaError.setBounds(10,80,50,50); // Dar el limite
-        // Checar estas lineas de codigo de abajo por si no se queja de hambre
-        add(etiquetaError);
-    }
-
-    // Metodo para los parametros de boton comer
-    public void botonesMetodo(){
-        botonComer.setBounds(100,100,100,100);
-        botonDormir.setBounds(150,100,100,100);
-        botonTomar.setBounds(200,100,100,100);
-        botonBanarse.setBounds(250,100,100,100);
-        botonCagar.setBounds(300,100,100,100);
+    public void botonesMetodo() {
+        botonComer.setBounds(300, 520, 120, 50);
+        botonDormir.setBounds(430, 520, 120, 50);
+        botonTomar.setBounds(560, 520, 120, 50);
+        botonBanarse.setBounds(690, 520, 120, 50);
+        botonCagar.setBounds(820, 520, 120, 50);
+        
         add(botonComer);
         add(botonDormir);
         add(botonTomar);
@@ -181,193 +89,152 @@ public class JoseJose extends JPanel implements TamagochiBase {
         add(botonCagar);
     }
 
-    // Setters y Getters
+    private void iniciarTimerAnimacion() {
+        timerAnimacion = new Timer(250, e -> {
+            
+            // Evaluamos necesidades pasivas solo si está en "idle"
+            if (estadoAnimacion.equals("idle")) {
+                if (hambre > 70) estadoAnimacion = "hambre";
+                else if (sueno > 70) estadoAnimacion = "sueno";
+                else if (suciedad > 70) estadoAnimacion = "suciedad";
+                else if (ganasDeCagar > 70) estadoAnimacion = "cagar";
+                else if (alcoholismo < 20) estadoAnimacion = "tomar";
+            } 
+            // Retornos a idle...
+            else if (estadoAnimacion.equals("hambre") && hambre <= 70) { estadoAnimacion = "idle"; } 
+            else if (estadoAnimacion.equals("sueno") && sueno <= 70) { estadoAnimacion = "idle"; } 
+            else if (estadoAnimacion.equals("suciedad") && suciedad <= 70) { estadoAnimacion = "idle"; } 
+            else if (estadoAnimacion.equals("cagar") && ganasDeCagar <= 70) { estadoAnimacion = "idle"; } 
+            else if (estadoAnimacion.equals("tomar") && alcoholismo >= 20) { estadoAnimacion = "idle"; }
 
-        // Getter de la variable hambre
-        public double getHambre() {
-            return hambre;
-        }
+            // Construimos la ruta
+            String ruta = "/img/josejose" + estadoAnimacion + frameAnimacion + ".png";
+            java.net.URL imgURL = getClass().getResource(ruta);
+            
+            if (imgURL != null) {
+                ImageIcon icono = new ImageIcon(imgURL);
+                Image img = icono.getImage().getScaledInstance(350, 350, Image.SCALE_SMOOTH);
+                spritePersonaje.setIcon(new ImageIcon(img));
+            }
 
-        // Setter de la variable hambre
-        public void setHambre(double hambre) {
-            this.hambre = hambre;
-        }
-
-        // Getter de la variable sueno
-        public double getSueno() {
-            return sueno;
-        }
-
-        // Setter de la variable sueno
-        public void setSueno(double sueno) {
-            this.sueno = sueno;
-        }
-
-        // Getter de la variable alcoholismo
-        public double getAlcoholismo() {
-            return alcoholismo;
-        }
-
-        // Setter de la variable alcoholismo
-        public void setAlcoholismo(double alcoholismo) {
-            this.alcoholismo = alcoholismo;
-        }
-
-        // Getter de la variable nombre
-        public String getNombre() {
-            return nombre;
-        }
-
-        // Setter de la variable nombre
-        public void setNombre(String nombre) {
-            this.nombre = nombre;
-        }
-
-        // Getter de la variable suciedad
-        public double getSuciedad() {
-            return suciedad;
-        }
-
-        // Setter de la variable suciedad
-        public void setSuciedad(double suciedad) {
-            this.suciedad = suciedad;
-        }
-
-        // Getter de la variable ganas de cagar
-        public double getGanasDeCagar() {
-            return ganasDeCagar;
-        }
-
-        // Setter de la variable ganas de cagar
-        public void setGanasDeCagar(double ganasDeCagar) {
-            this.ganasDeCagar = ganasDeCagar;
-        }
-
-    // Acciones de quejarse
-
-        @Override
-        public void quejarseHambriento() {
-            // Si el hambre sube de 75, mostrar el mensaje
-            if (getHambre() > 75 ){
-                etiquetaHambre = new JLabel();
-                etiquetaHambre.setText("Tengo hambre we");
-                etiquetaHambre.setForeground(Color.GREEN); // Le da el color de fondo
-                etiquetaHambre.setBounds(10,10,50,50); // Dar el limite
-                // Checar estas lineas de codigo de abajo por si no se queja de hambre
-                add(etiquetaHambre);
-                etiquetaHambre.setVisible(true);
+            // --- LÓGICA DE AVANCE DE FRAME ---
+            if (estadoAnimacion.equals("morir")) {
+                // Si está muriendo, avanza pero detente en el frame 4 (el fantasma/tumba)
+                if (frameAnimacion < 4) {
+                    frameAnimacion++;
+                } else {
+                    // Ya llegó al final de la muerte, congelamos el timer de animación
+                    timerAnimacion.stop();
+                }
             } else {
-                // Checar esta linea de codigo por si no desaparece
-                etiquetaHambre.setVisible(false);
+                // Ciclo normal para idle y acciones (1-2-3-4-1...)
+                frameAnimacion++;
+                if (frameAnimacion > 4) {
+                    frameAnimacion = 1;
+                }
             }
-        }
+        });
+        timerAnimacion.start();
+    }
 
-        @Override
-        public void cansadoSueno() {
-            // Si el sueno sube de 80, mostrar el mensaje
-            if (getSueno() > 80){
-                etiquetaSueno = new JLabel();
-                etiquetaSueno.setText("Tengo ganas de mimir we");
-                etiquetaSueno.setForeground(Color.GREEN); // Le da el color de fondo
-                etiquetaSueno.setBounds(10,20,50,50); // Dar el limite
-                // Checar estas lineas de codigo de abajo por si no se queja de hambre
-                add(etiquetaSueno);
-                etiquetaSueno.setVisible(true);
+    private void cambiarEstadoTemporal(String nuevoEstado) {
+        if (vida <= 0) return; // No hacer acciones si está muerto
+        estadoAnimacion = nuevoEstado;
+        frameAnimacion = 1; 
+        
+        Timer t = new Timer(1500, e -> {
+            if (vida > 0) { // Solo volver a idle si sigue vivo
+                estadoAnimacion = "idle";
+                frameAnimacion = 1;
+            }
+        });
+        t.setRepeats(false);
+        t.start();
+    }
+
+public void iniciarTimerVida() {
+        timerVida = new Timer(3000, e -> {
+            hambre = Math.min(hambre + 5.0, 100.0);
+            sueno = Math.min(sueno + 3.0, 100.0);
+            suciedad = Math.min(suciedad + 2.0, 100.0);
+            ganasDeCagar = Math.min(ganasDeCagar + 4.0, 100.0);
+            alcoholismo = Math.max(alcoholismo - 4.0, 0.0);
+            
+            boolean sufriendo = false;
+            
+            // --- AJUSTE DE DIFICULTAD: DAÑO MÁS RÁPIDO ---
+            if (hambre >= 90 || sueno >= 90 || suciedad >= 90 || ganasDeCagar >= 90 || alcoholismo <= 5) {
+                vida = Math.max(0.0, vida - 20.0); // CAMBIO: Antes restaba 8, ahora resta 20 de golpe
+                sufriendo = true;
             } else {
-                // Checar esta linea de codigo por si no desaparece
-                etiquetaSueno.setVisible(false);
+                vida = Math.min(100.0, vida + 1.0); // CAMBIO: Curación más lenta (antes 2, ahora 1)
             }
-        }
 
-        @Override
-        public void llorar() {
-            // Si el alcoholismo baja de 90, mostrar el mensaje
-            if (getAlcoholismo() < 90){
-                etiquetaLlorar = new JLabel();
-                etiquetaLlorar.setText("DAME ALCOHOL");
-                etiquetaLlorar.setForeground(Color.GREEN); // Le da el color de fondo
-                etiquetaLlorar.setBounds(10,30,50,50); // Dar el limite
-                // Checar estas lineas de codigo de abajo por si no se queja de hambre
-                add(etiquetaLlorar);
-                etiquetaLlorar.setVisible(true);
+            barraVida.setValue((int) vida);
+            
+            if (vida < 30) barraVida.setForeground(Color.RED);
+            else if (vida < 60) barraVida.setForeground(Color.ORANGE);
+            else barraVida.setForeground(new Color(46, 204, 113));
+
+            // Revisión de muerte
+            if (vida <= 0) {
+                etiquetaEstado.setText("¡José José ha fallecido! F en el chat.");
+                vida = 0;
+                
+                if (!estadoAnimacion.equals("morir")) {
+                    estadoAnimacion = "morir";
+                    frameAnimacion = 1; 
+                }
+                
+                timerVida.stop();
+            } else if (sufriendo) {
+                etiquetaEstado.setText("¡José está sufriendo DAÑO CRÍTICO por descuido!");
+            } else if (hambre > 70) {
+                etiquetaEstado.setText("¡Jose tiene mucha hambre!");
+            } else if (ganasDeCagar > 70) {
+                etiquetaEstado.setText("¡Jose necesita ir al baño urgentemente!");
+            } else if (alcoholismo < 20) {
+                etiquetaEstado.setText("¡Jose necesita alcohol!");
             } else {
-                // Checar esta linea de codigo por si no desaparece
-                etiquetaLlorar.setVisible(false);
+                etiquetaEstado.setText("Jose Jose está tranquilo");
             }
-        }
+            
+            repaint();
+        });
+        timerVida.start();
+    }
 
-        @Override
-        public void quejarseSuciedad() {
-            // Si la suciedad sube de 85, quejarse
-            if (getSuciedad() > 85){
-                etiquetaSucio = new JLabel();
-                etiquetaSucio.setText("Necesito un bano por favor");
-                etiquetaSucio.setForeground(Color.GREEN); // Le da el color de fondo
-                etiquetaSucio.setBounds(10,40,50,50); // Dar el limite
-                // Checar estas lineas de codigo de abajo por si no se queja de hambre
-                add(etiquetaSucio);
-                etiquetaSucio.setVisible(true);
-            } else {
-                // Checar esta linea de codigo por si no desaparece
-                etiquetaSucio.setVisible(false);
-            }
-        }
+    // --- ACCIONES BLOQUEADAS SI ESTÁ MUERTO ---
+    @Override public void accionComer() { 
+        if (vida <= 0) { etiquetaEstado.setText("Demasiado tarde..."); return; }
+        hambre = Math.max(0, hambre - 25); 
+        cambiarEstadoTemporal("comer");
+    }
+    @Override public void accionDormir() { 
+        if (vida <= 0) { etiquetaEstado.setText("Ya duerme eternamente."); return; }
+        sueno = Math.max(0, sueno - 50); 
+        cambiarEstadoTemporal("dormir");
+    }
+    @Override public void accionFelicidad() { 
+        if (vida <= 0) { etiquetaEstado.setText("Ni el alcohol lo revive."); return; }
+        alcoholismo = Math.min(100, alcoholismo + 20); 
+        cambiarEstadoTemporal("tomar");
+    }
+    @Override public void accionBanarse() { 
+        if (vida <= 0) { etiquetaEstado.setText("QEPD."); return; }
+        suciedad = 0; 
+        cambiarEstadoTemporal("banarse");
+    }
+    @Override public void accionCagar() { 
+        if (vida <= 0) { return; }
+        ganasDeCagar = 0; 
+        cambiarEstadoTemporal("cagar");
+    }
 
-        @Override
-        public void quejarseCagar() {
-            // Si las ganas de cagar sube de 90, quejarse
-            if (getSuciedad() > 90){
-                etiquetaCagar = new JLabel();
-                etiquetaCagar.setText("SE ME SALE LA CACA");
-                etiquetaCagar.setForeground(Color.GREEN); // Le da el color de fondo
-                etiquetaCagar.setBounds(10,50,50,50); // Dar el limite
-                // Checar estas lineas de codigo de abajo por si no se queja de hambre
-                add(etiquetaCagar);
-                etiquetaCagar.setVisible(true);
-            } else {
-                // Checar esta linea de codigo por si no desaparece
-                etiquetaCagar.setVisible(false);
-            }
-        }
-
-
-
-    // Acciones de calmar    
-
-        @Override
-        public void accionComer() {
-            setHambre(getHambre()-20.0);
-            // Este condicional es para asegurarnes que se quede en el rango de la variable
-            if(getHambre() < 0){
-                setHambre(0.0);
-            }
-        }
-
-        @Override
-        public void accionDormir() {
-            setSueno(getSueno()-75.0);
-            // Este condicional es para asegurarnes que se quede en el rango de la variable
-            if(getSueno() < 0){
-                setSueno(0.0);
-            }
-        }
-
-        @Override
-        public void accionFelicidad() {
-            setAlcoholismo(getAlcoholismo()+5.0);
-            // Este condicional es para asegurarnes que se quede en el rango de la variable
-            if(getAlcoholismo() > 100.0){
-                setAlcoholismo(100.0);
-            }
-        }
-
-        @Override
-        public void accionBanarse() {
-            setSuciedad(100.0);
-        }
-
-        @Override
-        public void accionCagar(){
-            setGanasDeCagar(100.0);
-        }
+    // Métodos vacíos obligatorios de la interfaz
+    @Override public void quejarseHambriento() {}
+    @Override public void cansadoSueno() {}
+    @Override public void llorar() {}
+    @Override public void quejarseSuciedad() {}
+    @Override public void quejarseCagar() {}
 }
