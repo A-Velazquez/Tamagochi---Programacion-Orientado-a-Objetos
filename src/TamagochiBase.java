@@ -20,19 +20,19 @@ public interface TamagochiBase {
     // Metodos para que la mascota realize una accion
 
         // Metodo para comer
-        public abstract void accionComer();
+        public abstract void accionComer() throws Exception;
 
         // Metodo para dormir
-        public abstract void accionDormir();
+        public abstract void accionDormir() throws Exception;
 
         // Metodo para subir la felicidad
-        public abstract void accionFelicidad();
+        public abstract void accionFelicidad() throws Exception;
 
         // Metodo paara banarse
-        public abstract void accionBanarse();
+        public abstract void accionBanarse() throws Exception;
 
         // Metodo para cagar
-        public abstract void accionCagar();
+        public abstract void accionCagar() throws Exception;
      
 
 }
